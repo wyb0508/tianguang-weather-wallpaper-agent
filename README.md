@@ -25,3 +25,7 @@ U²-NetP 提取显著主体，SegFormer-B0 对场景进行语义分割。生成�
 
 - U²-NetP 出自 [U-2-Net](https://github.com/xuebinqin/U-2-Net)，使用 [rembg 发布的 ONNX 权重](https://github.com/danielgatis/rembg/releases/tag/v0.0.0)。随附条款见 [Apache License 2.0](models/LICENSE-U2Net.txt)。
 - SegFormer-B0 ADE20K 使用 [NVIDIA 模型](https://huggingface.co/nvidia/segformer-b0-finetuned-ade-512-512) 的 [量化 ONNX 转换](https://huggingface.co/Xenova/segformer-b0-finetuned-ade-512-512/tree/d3e5499fa8701ff0453ca940a8dfeae39b2f1504)。NVIDIA 许可将该模型的用途限定为非商业研究或评估。完整条款见 [SegFormer 许可](models/LICENSE-SegFormer.txt)。
+
+## 天气积留位置技能
+
+读取已分区照片，导出积雪、积水、霜、露与冰的原尺寸位置蒙版。支持单图和分区 ZIP 批处理。[源码与使用说明](skills/weather-surface-physics/README.md) · [下载完整技能包](skills/weather-surface-physics.zip)
