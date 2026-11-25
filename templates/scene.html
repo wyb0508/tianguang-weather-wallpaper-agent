@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>天气壁纸预览</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#12181d;color:#f6f5ed;font:15px system-ui,sans-serif}
+#stage,.layer,canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.layer{object-fit:cover;background-position:center;background-size:cover;mask-size:cover;mask-position:center;-webkit-mask-size:cover;-webkit-mask-position:center}
+#sky{background:linear-gradient(155deg,#929ca8,#e8f0fa88 75%,transparent)}#light{mix-blend-mode:multiply}
+#panel{position:fixed;left:clamp(12px,3vw,42px);bottom:clamp(12px,4vh,42px);background:#17212aec;border:1px solid #ffffff30;border-radius:14px;padding:15px 20px;max-width:calc(100vw - 24px);box-shadow:0 6px 26px #0004}
+h1{font:600 18px system-ui;margin:0 0 12px}.row,#legend{display:flex;gap:12px;align-items:center;flex-wrap:wrap}select,button{font:inherit;color:inherit;background:#35434e;border:1px solid #71818b;border-radius:6px;padding:5px 9px}select option{color:#fff;background:#35434e}button[aria-pressed=true]{background:#655241}#legend{margin-top:12px;gap:8px 12px;font-size:12px}i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}
+[hidden],.desktop #panel{display:none!important}
+</style>
+<main id="stage" aria-label="动态壁纸">
+<img id="base" class="layer"><div class="layer" id="sky"></div><canvas id="far"></canvas>
+<img id="subject" class="layer"><img id="wet" class="layer"><canvas id="ripples" class="layer"></canvas>
+<img id="snow" class="layer"><div id="light" class="layer"></div><canvas id="near"></canvas><img id="inspect" class="layer" hidden>
+</main>
+<section id="panel"><h1 id="name"></h1><div class="row"><label>天气 <select id="preset"></select></label><button id="toggle" aria-pressed="false">识别区域</button></div><div id="legend" hidden></div></section>
+<script>
+const data = __PAYLOAD__;
+__RENDERER__
+</script></html>
