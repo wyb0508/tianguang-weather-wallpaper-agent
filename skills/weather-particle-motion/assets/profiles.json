@@ -1,0 +1,15 @@
+{
+  "晴朗": {"kind":"clear"},
+  "日出": {"kind":"clear"},
+  "日落": {"kind":"clear"},
+  "黄昏": {"kind":"clear"},
+  "深夜": {"kind":"clear"},
+  "多云": {"kind":"clear"},
+  "大风": {"kind":"wind","count":64,"near":0.22,"opacity":0.38,"fall":0.018,"wind":0.25},
+  "小雨": {"kind":"rain","count":115,"near":0.22,"opacity":0.42,"fall":0.52,"wind":0.033},
+  "大雨": {"kind":"rain","count":360,"near":0.34,"opacity":0.73,"fall":0.94,"wind":0.095},
+  "小雪": {"kind":"snow","count":64,"near":0.12,"opacity":0.60,"fall":0.046,"wind":0.016},
+  "中雪": {"kind":"snow","count":150,"near":0.18,"opacity":0.71,"fall":0.061,"wind":0.032},
+  "大雪": {"kind":"snow","count":285,"near":0.24,"opacity":0.82,"fall":0.078,"wind":0.050},
+  "暴雪": {"kind":"snow","count":460,"near":0.30,"opacity":0.87,"fall":0.103,"wind":0.110}
+}

@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "image_sha256": "c0feb6dd0056872a0050a755d342086133e9050af75296dd5901b7def0db8985",
+  "subject": "tree",
+  "motion": "stationary",
+  "merge_into": {},
+  "sheltered": [],
+  "ground_snow": "natural",
+  "accumulation": "fixed_per_intensity",
+  "weather": {
+    "晴朗": "standard",
+    "日出": "standard",
+    "日落": "standard",
+    "黄昏": "standard",
+    "深夜": "standard",
+    "多云": "standard",
+    "大风": "standard",
+    "小雨": "standard",
+    "大雨": "standard",
+    "小雪": "standard",
+    "中雪": "standard",
+    "大雪": "standard",
+    "暴雪": "standard"
+  },
+  "region_pack_sha256": "f1191a0d7e2435409227356c3f002bb959b5a8be13a8ff03bdc1df390c1533da"
+}

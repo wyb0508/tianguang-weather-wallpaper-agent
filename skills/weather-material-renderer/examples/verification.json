@@ -1,0 +1,195 @@
+{
+  "light": {
+    "snow": {
+      "0": {
+        "pixels": 692770,
+        "nonzero_alpha": 0
+      },
+      "127": {
+        "pixels": 14001,
+        "nonzero_alpha": 0
+      },
+      "255": {
+        "pixels": 866581,
+        "nonzero_alpha": 124436
+      }
+    },
+    "mean_alpha_0_255": {
+      "car": 3.109,
+      "road": 6.008,
+      "grass": 4.084,
+      "tree": 4.47
+    }
+  },
+  "heavy": {
+    "snow": {
+      "0": {
+        "pixels": 692770,
+        "nonzero_alpha": 0
+      },
+      "127": {
+        "pixels": 14001,
+        "nonzero_alpha": 0
+      },
+      "255": {
+        "pixels": 866581,
+        "nonzero_alpha": 647703
+      }
+    },
+    "mean_alpha_0_255": {
+      "car": 34.844,
+      "road": 99.425,
+      "grass": 98.503,
+      "tree": 33.996
+    }
+  },
+  "fast": {
+    "snow": {
+      "0": {
+        "pixels": 692770,
+        "nonzero_alpha": 0
+      },
+      "127": {
+        "pixels": 14001,
+        "nonzero_alpha": 0
+      },
+      "255": {
+        "pixels": 866581,
+        "nonzero_alpha": 611252
+      }
+    },
+    "mean_alpha_0_255": {
+      "car": 1.182,
+      "road": 99.425,
+      "grass": 98.503,
+      "tree": 33.996
+    }
+  },
+  "wet": {
+    "road_wet_pixels": 98025,
+    "road_film_pixels": 89120,
+    "puddle": {
+      "0": {
+        "pixels": 1573352,
+        "nonzero_alpha": 0
+      },
+      "127": {
+        "pixels": 0,
+        "nonzero_alpha": 0
+      },
+      "255": {
+        "pixels": 0,
+        "nonzero_alpha": 0
+      }
+    }
+  },
+  "snow": {
+    "snow": {
+      "0": {
+        "pixels": 863148,
+        "nonzero_alpha": 0
+      },
+      "127": {
+        "pixels": 420,
+        "nonzero_alpha": 0
+      },
+      "255": {
+        "pixels": 365232,
+        "nonzero_alpha": 293366
+      }
+    }
+  },
+  "snow_grades": [
+    {
+      "weather": "小雪",
+      "visible": 124436,
+      "mean_alpha": 3.661
+    },
+    {
+      "weather": "中雪",
+      "visible": 322488,
+      "mean_alpha": 15.986
+    },
+    {
+      "weather": "大雪",
+      "visible": 647703,
+      "mean_alpha": 54.993
+    },
+    {
+      "weather": "暴雪",
+      "visible": 820651,
+      "mean_alpha": 100.939
+    }
+  ],
+  "结霜": {
+    "0": {
+      "pixels": 669109,
+      "nonzero_alpha": 0
+    },
+    "127": {
+      "pixels": 420,
+      "nonzero_alpha": 0
+    },
+    "255": {
+      "pixels": 559271,
+      "nonzero_alpha": 556999
+    }
+  },
+  "凝露": {
+    "0": {
+      "pixels": 669109,
+      "nonzero_alpha": 0
+    },
+    "127": {
+      "pixels": 420,
+      "nonzero_alpha": 0
+    },
+    "255": {
+      "pixels": 559271,
+      "nonzero_alpha": 20985
+    }
+  },
+  "冻雨挂冰": {
+    "0": {
+      "pixels": 669109,
+      "nonzero_alpha": 0
+    },
+    "127": {
+      "pixels": 420,
+      "nonzero_alpha": 0
+    },
+    "255": {
+      "pixels": 559271,
+      "nonzero_alpha": 555088
+    }
+  },
+  "积水再冻结": {
+    "0": {
+      "pixels": 863148,
+      "nonzero_alpha": 0
+    },
+    "127": {
+      "pixels": 420,
+      "nonzero_alpha": 0
+    },
+    "255": {
+      "pixels": 365232,
+      "nonzero_alpha": 365232
+    }
+  },
+  "冰雹堆积": {
+    "0": {
+      "pixels": 1228357,
+      "nonzero_alpha": 0
+    },
+    "127": {
+      "pixels": 443,
+      "nonzero_alpha": 0
+    },
+    "255": {
+      "pixels": 0,
+      "nonzero_alpha": 0
+    }
+  },
+  "repeat_identical_packages": 5
+}

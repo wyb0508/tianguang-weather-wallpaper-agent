@@ -11,8 +11,8 @@ h1{font:600 18px system-ui;margin:0 0 12px}.row,#legend{display:flex;gap:12px;al
 </style>
 <main id="stage" aria-label="动态壁纸">
 <img id="base" class="layer"><div class="layer" id="sky"></div><canvas id="far"></canvas>
-<img id="subject" class="layer"><img id="wet" class="layer"><canvas id="ripples" class="layer"></canvas>
-<img id="snow" class="layer"><div id="light" class="layer"></div><canvas id="near"></canvas><img id="inspect" class="layer" hidden>
+<img id="subject" class="layer"><img id="wet" class="layer"><img id="puddle" class="layer" hidden><canvas id="ripples" class="layer"></canvas>
+<img id="snow" class="layer"><div id="light" class="layer"></div><canvas id="near"></canvas><img id="caption" class="layer" hidden><img id="inspect" class="layer" hidden>
 </main>
 <section id="panel"><h1 id="name"></h1><div class="row"><label>天气 <select id="preset"></select></label><button id="toggle" aria-pressed="false">识别区域</button></div><div id="legend" hidden></div></section>
 <script>

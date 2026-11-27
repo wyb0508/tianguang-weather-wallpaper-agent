@@ -1,0 +1,200 @@
+{
+  "schema": "scene-regions/v1",
+  "source": "照片.jpg",
+  "sha256": "126f7210f38dfda36154ed2d6063946aa020783f185a7bdf88af324be444d704",
+  "size": [
+    1280,
+    960
+  ],
+  "analysis_size": [
+    1024,
+    768
+  ],
+  "orientation": "exif-transposed",
+  "region_map": "regions.png",
+  "class_map": "classes.png",
+  "preview": "preview.jpg",
+  "region_preview": "regions-preview.jpg",
+  "regions": [
+    {
+      "id": 1,
+      "key": "sky",
+      "label": "sky",
+      "class_id": 2,
+      "color": "#774ff0",
+      "pixels": 609897
+    },
+    {
+      "id": 2,
+      "key": "tree",
+      "label": "tree",
+      "class_id": 4,
+      "color": "#56f04f",
+      "pixels": 154493
+    },
+    {
+      "id": 3,
+      "key": "road",
+      "label": "road",
+      "class_id": 6,
+      "color": "#f04f85",
+      "pixels": 108842
+    },
+    {
+      "id": 4,
+      "key": "grass",
+      "label": "grass",
+      "class_id": 9,
+      "color": "#4fb4f0",
+      "pixels": 76735
+    },
+    {
+      "id": 5,
+      "key": "earth",
+      "label": "earth",
+      "class_id": 13,
+      "color": "#e3f04f",
+      "pixels": 26305
+    },
+    {
+      "id": 6,
+      "key": "mountain",
+      "label": "mountain",
+      "class_id": 16,
+      "color": "#ce4ff0",
+      "pixels": 1629
+    },
+    {
+      "id": 7,
+      "key": "plant",
+      "label": "plant",
+      "class_id": 17,
+      "color": "#4ff09f",
+      "pixels": 88772
+    },
+    {
+      "id": 8,
+      "key": "field",
+      "label": "field",
+      "class_id": 29,
+      "color": "#f0704f",
+      "pixels": 4045
+    },
+    {
+      "id": 9,
+      "key": "fence",
+      "label": "fence",
+      "class_id": 32,
+      "color": "#4f5df0",
+      "pixels": 18148
+    },
+    {
+      "id": 10,
+      "key": "hill",
+      "label": "hill",
+      "class_id": 68,
+      "color": "#8cf04f",
+      "pixels": 780
+    },
+    {
+      "id": 11,
+      "key": "sky.subject",
+      "label": "sky",
+      "class_id": 2,
+      "color": "#f04fbb",
+      "pixels": 7924
+    },
+    {
+      "id": 12,
+      "key": "tree.subject",
+      "label": "tree",
+      "class_id": 4,
+      "color": "#4feaf0",
+      "pixels": 131230
+    }
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "key": "subject",
+      "name": "主体",
+      "color": "#ff774c",
+      "region_ids": [
+        11,
+        12
+      ],
+      "mask": "masks/subject.png",
+      "pixels": 139154
+    },
+    {
+      "id": 2,
+      "key": "sky",
+      "name": "天空",
+      "color": "#4ba9ee",
+      "region_ids": [
+        1
+      ],
+      "mask": "masks/sky.png",
+      "pixels": 609897
+    },
+    {
+      "id": 3,
+      "key": "background",
+      "name": "背景",
+      "color": "#44906c",
+      "region_ids": [
+        2,
+        6,
+        7,
+        9,
+        10
+      ],
+      "mask": "masks/background.png",
+      "pixels": 263822
+    },
+    {
+      "id": 4,
+      "key": "ground",
+      "name": "地面",
+      "color": "#d6ab56",
+      "region_ids": [
+        3,
+        4,
+        5,
+        8
+      ],
+      "mask": "masks/ground.png",
+      "pixels": 215927
+    }
+  ],
+  "subject": {
+    "region_ids": [
+      11,
+      12
+    ],
+    "method": "review_salient",
+    "candidates": [
+      {
+        "id": 2,
+        "iou": 0.447
+      },
+      {
+        "id": 1,
+        "iou": 0.0106
+      }
+    ]
+  },
+  "boundary_refinement": {
+    "changed_analysis_pixels": 796,
+    "working_size": [
+      1280,
+      960
+    ]
+  },
+  "quality": "precise",
+  "model_disagreement": {
+    "analysis_pixels": 101105,
+    "fraction": 0.12856,
+    "preview": "review.jpg"
+  }
+}

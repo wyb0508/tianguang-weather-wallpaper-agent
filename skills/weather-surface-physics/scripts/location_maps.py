@@ -26,6 +26,9 @@ def apply_spatial_review(regions, sample_map, parts, owners, labels, review):
         if rid in reserved:
             name, facts = reserved[rid]
             area = regions == rid
+            if facts["kind"] == "water":
+                pond_ids = [i for i,p in enumerate(parts,1) if p["kind"]=="water" and p.get("pools") is True]
+                area &= ~np.isin(grid,pond_ids)
         else:
             name, facts = "原尺寸边界细部", {"kind": "unknown"}
             area = (grid == 0) & (regions == rid)
@@ -79,6 +82,10 @@ def write_maps(folder, photo, grid, parts, output):
                                    for i, p in enumerate(parts, 1)])
     output["encoding"] = {str(value): key for key, value in ENCODING.items()}
     output["maps"], output["previews"] = {}, {}
+    ponds = [i for i,p in enumerate(parts,1) if p["kind"]=="water" and p.get("pools") is True]
+    if ponds:
+        output["standing_water"] = "已有浅积水.png"
+        Image.fromarray(np.isin(grid,ponds)).convert("L").save(folder/output["standing_water"])
     index = {(p["region_id"], p["name"]): i for i, p in enumerate(parts, 1)}
     thumb = photo.copy()
     thumb.thumbnail((850, 850))

@@ -19,7 +19,7 @@ if [[ ! -x "$python_env" ]]; then
   print -u2 '请安装 Python 3.10–3.13 后重新打开生成器。'
   exit 1
 fi
-if ! "$python_env" -c 'import PIL,numpy,onnxruntime,pillow_heif' 2>/dev/null; then
+if ! "$python_env" -c 'import PIL,numpy,onnxruntime,pillow_heif,cv2' 2>/dev/null; then
   "$python_env" -m pip install -r "$project_dir/requirements.txt"
 fi
 exec "$python_env" "$project_dir/agent.py" "$@"

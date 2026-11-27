@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>降水与风场动画</title>
+<style>
+:root{color-scheme:dark;font:15px system-ui,sans-serif}body{margin:0;background:#11171a;color:#faf8f4}
+#stage{position:fixed;inset:0}.controls{position:fixed;left:clamp(14px,3vw,42px);bottom:clamp(14px,4vh,38px);display:flex;align-items:center;gap:12px;padding:12px 16px;background:#192128ed;border:1px solid #c6dbe84d;border-radius:12px}
+select,button{font:inherit;background:#37424b;color:inherit;border:1px solid #808f9b;border-radius:6px;padding:4px 9px}
+#status{position:fixed;inset:15px auto auto 14px;background:#16212a;padding:6px 10px}#status:empty,.desktop .controls{display:none}
+</style>
+<main id="stage" aria-label="降水与风场动画"></main>
+<section class="controls"><label>天气 <select id="preset"></select></label><button id="toggle" type="button">暂停</button></section>
+<output id="status" role="status">正在载入照片与蒙版…</output>
+<script src="scene-data.js"></script><script src="motion.js"></script>
+<script>
+const stage=document.getElementById('stage'), select=document.getElementById('preset'), toggle=document.getElementById('toggle');
+const options = weatherMotionScene.config;
+const statusNode = document.getElementById('status');
+document.body.classList.toggle('desktop',location.hash === '#desktop');
+for (const key of Object.keys(options.profiles)) select.add(new Option(key,key));
+select.value=options.default_weather;
+window.motionReady = WeatherParticleMotion.create(stage,weatherMotionScene).then(motion=>{
+  window.motion=motion;
+  select.onchange=()=>motion.setWeather(select.value);
+  let paused=false;
+  toggle.onclick=()=>{paused=!paused; if(paused) motion.pause(); else motion.resume(); toggle.textContent=paused?'继续':'暂停';};
+  statusNode.textContent='';
+  document.body.dataset.ready='true';
+  return motion;
+}).catch(error=>{statusNode.textContent=error.message; throw error;});
+</script></html>

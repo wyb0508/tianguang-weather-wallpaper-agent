@@ -10,6 +10,11 @@ setMask(el('sky'), data.sky);
 setMask(el('ripples'), data.water);
 el('snow').src = data.snow;
 el('wet').src = data.rain;
+if (data.caption) {
+  el('caption').src = data.photo;
+  setMask(el('caption'), data.caption);
+  el('caption').hidden = false;
+}
 el('inspect').src = data.inspector;
 el('name').textContent = data.title;
 for (const [key, [name, color]] of Object.entries(data.legend)) {
@@ -20,17 +25,23 @@ for (const [key, [name, color]] of Object.entries(data.legend)) {
   label.append(dot, name + ' ' + Math.round(100 * data.coverage[key]) + '%');
   el('legend').append(label);
 }
-const presets = ['晴朗','日出','日落','黄昏','深夜','多云','大风','小雨','大雨','小雪','大雪'];
+const presets = ['晴朗','日出','日落','黄昏','深夜','多云','大风','小雨','大雨','小雪','中雪','大雪','暴雪'];
 for (const name of presets) el('preset').add(new Option(name,name));
 let mode = desktop ? 'live' : '大雪';
-let forecast = null, strength = 0, type = '', wind = 0;
+let forecast = null, strength = 0, type = '', wind = 0, gust = false, gustGain = 1;
+const snowProfiles = {
+  '小雪': {density:.22, cloud:.12}, '中雪': {density:.53, cloud:.22},
+  '大雪': {density:1, cloud:.34}, '暴雪': {density:1.65, cloud:.55}
+};
 function liveWeather() {
   const t = Date.now()/1000, hourly = forecast?.hourly;
   const i = hourly?.time?.findIndex((x,j) => x <= t && t < x + 3600);
   const current = forecast?.current;
   const code = i >= 0 ? hourly.weather_code[i] : Math.abs(t - current?.time) < 5400 ? current.weather_code : 0;
-  if ([71,73,75,77,85,86].includes(code)) return [75,86].includes(code) ? '大雪' : '小雪';
+  if ([71,73,75,77,85,86].includes(code)) return [75,86].includes(code) ? '大雪' : code===73 ? '中雪' : '小雪';
   if (code >= 50) return [65,67,82,95,96,99].includes(code) ? '大雨' : '小雨';
+  const speed = i >= 0 ? hourly.wind_speed_10m?.[i] : current?.wind_speed_10m;
+  if (speed >= 40) return '大风';
   if (code >= 2) return '多云';
   return '晴朗';
 }
@@ -48,13 +59,29 @@ function daylight() {
 function applyWeather() {
   const p = mode==='live' ? liveWeather() : mode;
   const light = mode==='live' ? daylight() : p;
+  const gain = data.weatherGain[p] ?? 1;
+  gust = p === '大风';
+  gustGain = gain;
   type = p.endsWith('雪') ? 'snow' : p.endsWith('雨') ? 'rain' : '';
-  strength = type ? (p.startsWith('大') ? 1 : .45) : 0;
+  strength = type ? (p.startsWith('大') ? 1 : .45)*gain : 0;
   wind = p==='大风' ? 1 : type==='rain' ? .55 : .3;
-  el('snow').style.opacity = type==='snow' ? strength : 0;
-  el('wet').style.opacity = type==='rain' ? strength : 0;
-  el('sky').style.opacity = p==='多云' ? .64 : type==='rain' ? .42 : type==='snow' ? .25 : 0;
-  el('light').style.background = ({'日出':'#ffe2ab','日落':'#ffc6a4','黄昏':'#a59cba','深夜':'#586581'})[light] || 'transparent';
+  const snowProfile = snowProfiles[p];
+  if (snowProfile) {
+    strength = snowProfile.density*gain;
+    const texture = data.snowLayers[p] || data.snow;
+    if (el('snow').src !== texture) el('snow').src = texture;
+  }
+  el('snow').style.opacity = snowProfile ? 1 : 0;
+  const puddle = el('puddle');
+  puddle.hidden = type !== 'rain';
+  if (!puddle.hidden) {
+    if (puddle.src !== data.puddles[p]) puddle.src = data.puddles[p];
+    puddle.style.opacity = Math.min(.8, .55*strength);
+  }
+  el('wet').style.opacity = type==='rain' ? Math.min(.95,.76*strength) : 0;
+  el('sky').style.opacity = gain*(p==='多云' ? .64 : type==='rain' ? .42 : snowProfile?.cloud || 0);
+  el('light').style.background = ({'晴朗':'#fff9ed','日出':'#ffe2ab','日落':'#ffc6a4','黄昏':'#a59cba','深夜':'#586581'})[light] || 'transparent';
+  el('light').style.opacity = Math.min(1, .8*(data.weatherGain[light] ?? 1));
 }
 window.wall = {};
 el('preset').value = mode;
@@ -73,12 +100,11 @@ function resize() {
 }
 resize();
 addEventListener('resize', resize);
-const flakes = Array.from({length:140}, () => [Math.random(),Math.random(),Math.random(),Math.random()]);
+const flakes = Array.from({length:320}, () => [Math.random(),Math.random(),Math.random(),Math.random()]);
 function drawParticles(ctx, time, front) {
   ctx.clearRect(0,0,width,height);
-  const gust = mode==='大风';
   if (!strength && !gust) return;
-  const count = Math.min(flakes.length, Math.ceil(width/13 * (gust ? .35 : strength) * (front ? .28 : 1)));
+  const count = Math.min(flakes.length, Math.ceil(width/13 * (gust ? .35*gustGain : strength) * (front ? .28 : 1)));
   ctx.fillStyle = front ? '#fbfdfff0' : '#edf6ffd6';
   ctx.strokeStyle = gust ? '#f2e5b774' : front ? '#dceeffb0' : '#dceeff75';
   ctx.lineWidth = front ? 1.4 : 1;
@@ -115,7 +141,7 @@ function frame() {
 let timer;
 function refresh(){
   applyWeather(); clearInterval(timer); frame();
-  if(!document.hidden && !reduced.matches && (strength || mode==='大风')) timer=setInterval(frame,50);
+  if(!document.hidden && !reduced.matches && (strength || gust)) timer=setInterval(frame,50);
 }
 window.wall.forecast = value => {forecast=value;refresh()};
 window.wall.preview = value => {mode=value;refresh()};

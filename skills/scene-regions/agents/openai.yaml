@@ -1,0 +1,4 @@
+interface:
+  display_name: "整图精细分区"
+  short_description: "按画面内容合并大区块、细化交界，导出整图预览和原尺寸特效蒙版"
+  default_prompt: "用 $scene-regions 按这张图的内容分组，展示整图彩色预览，并导出各区块蒙版给特效 Agent。"

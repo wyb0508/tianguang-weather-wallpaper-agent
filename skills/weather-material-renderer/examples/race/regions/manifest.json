@@ -1,0 +1,264 @@
+{
+  "schema": "scene-regions/v1",
+  "source": "赛车样图.jpg",
+  "sha256": "3f625bce07cce99213a4130f7e835c2f78f0d7cbeb3bc0f305406201ff13568f",
+  "size": [
+    1672,
+    941
+  ],
+  "analysis_size": [
+    1024,
+    576
+  ],
+  "orientation": "exif-transposed",
+  "region_map": "regions.png",
+  "class_map": "classes.png",
+  "preview": "preview.jpg",
+  "region_preview": "regions-preview.jpg",
+  "regions": [
+    {
+      "id": 1,
+      "key": "wall",
+      "label": "wall",
+      "class_id": 0,
+      "color": "#774ff0",
+      "pixels": 490
+    },
+    {
+      "id": 2,
+      "key": "sky",
+      "label": "sky",
+      "class_id": 2,
+      "color": "#56f04f",
+      "pixels": 257741
+    },
+    {
+      "id": 3,
+      "key": "floor",
+      "label": "floor",
+      "class_id": 3,
+      "color": "#f04f85",
+      "pixels": 455906
+    },
+    {
+      "id": 4,
+      "key": "tree",
+      "label": "tree",
+      "class_id": 4,
+      "color": "#4fb4f0",
+      "pixels": 388718
+    },
+    {
+      "id": 5,
+      "key": "road",
+      "label": "road",
+      "class_id": 6,
+      "color": "#e3f04f",
+      "pixels": 98045
+    },
+    {
+      "id": 6,
+      "key": "grass",
+      "label": "grass",
+      "class_id": 9,
+      "color": "#ce4ff0",
+      "pixels": 114327
+    },
+    {
+      "id": 7,
+      "key": "car",
+      "label": "car",
+      "class_id": 20,
+      "color": "#4ff09f",
+      "pixels": 158150
+    },
+    {
+      "id": 8,
+      "key": "fence",
+      "label": "fence",
+      "class_id": 32,
+      "color": "#f0704f",
+      "pixels": 99975
+    }
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "key": "subject",
+      "name": "主体",
+      "color": "#ff774c",
+      "region_ids": [
+        7
+      ],
+      "mask": "masks/subject.png",
+      "pixels": 158150
+    },
+    {
+      "id": 2,
+      "key": "background",
+      "name": "背景",
+      "color": "#44906c",
+      "region_ids": [
+        1,
+        4,
+        6,
+        8
+      ],
+      "mask": "masks/background.png",
+      "pixels": 603510
+    },
+    {
+      "id": 3,
+      "key": "sky",
+      "name": "天空",
+      "color": "#4ba9ee",
+      "region_ids": [
+        2
+      ],
+      "mask": "masks/sky.png",
+      "pixels": 257741
+    },
+    {
+      "id": 4,
+      "key": "track",
+      "name": "赛道",
+      "color": "#bc80eb",
+      "region_ids": [
+        3,
+        5
+      ],
+      "mask": "masks/track.png",
+      "pixels": 553951
+    }
+  ],
+  "subject": {
+    "region_ids": [
+      7
+    ],
+    "method": "semantic_saliency_agreement",
+    "candidates": [
+      {
+        "id": 7,
+        "iou": 0.8647
+      },
+      {
+        "id": 5,
+        "iou": 0.022
+      },
+      {
+        "id": 3,
+        "iou": 0.0002
+      }
+    ]
+  },
+  "quality": "precise",
+  "corrections": {
+    "edits": [
+      {
+        "from": [
+          "road",
+          "floor"
+        ],
+        "to": "fence",
+        "polygon": [
+          [
+            0,
+            267
+          ],
+          [
+            250,
+            263
+          ],
+          [
+            252,
+            278
+          ],
+          [
+            0,
+            299
+          ]
+        ]
+      },
+      {
+        "from": [
+          "road",
+          "floor"
+        ],
+        "to": "fence",
+        "polygon": [
+          [
+            551,
+            247
+          ],
+          [
+            701,
+            225
+          ],
+          [
+            862,
+            201
+          ],
+          [
+            1023,
+            180
+          ],
+          [
+            1023,
+            210
+          ],
+          [
+            846,
+            226
+          ],
+          [
+            703,
+            249
+          ],
+          [
+            565,
+            268
+          ]
+        ]
+      },
+      {
+        "from": [
+          "road",
+          "floor"
+        ],
+        "to": "fence",
+        "polygon": [
+          [
+            690,
+            329
+          ],
+          [
+            845,
+            337
+          ],
+          [
+            1023,
+            343
+          ],
+          [
+            1023,
+            419
+          ],
+          [
+            854,
+            404
+          ],
+          [
+            709,
+            394
+          ]
+        ]
+      }
+    ],
+    "changed_pixels": 23265
+  },
+  "model_disagreement": {
+    "analysis_pixels": 46815,
+    "fraction": 0.07937,
+    "preview": "review.jpg"
+  }
+}

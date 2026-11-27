@@ -48,6 +48,8 @@ def decide(part, event):
         return "保守略过", ["照片中无法可靠定位该表面"]
     clauses = RULES[event]
     if kind == "water":
+        if event == "积水" and part.get("pools") is True:
+            return "会", []
         if event != "积水再冻结":
             return "不会", []
         clauses = [("water_freezes",)]
@@ -127,16 +129,23 @@ def check_group_masks(manifest, data, regions):
                 raise ValueError(f"分组蒙版与区块编号不一致：{group['key']}")
 
 
-def build(photo_path, manifest, folder, weather, inventory=None, patches=None):
+def build(photo_path, manifest, folder, weather, inventory=None, patches=None, answers=None):
     raw = manifest.read_bytes()
     data = json.loads(raw)
     digest = hashlib.sha256(raw).hexdigest()
     photo = load_photo(photo_path)
-    scene, _, _ = import_regions(manifest, photo_path, photo)
+    scene, group_masks, signature = import_regions(manifest, photo_path, photo)
     with Image.open(manifest.parent / data["region_map"]) as original:
         regions = np.array(original)
         sample_regions = np.array(original.resize(scene[0].size, Image.Resampling.NEAREST))
     check_group_masks(manifest, data, regions)
+    plan = None
+    if answers:
+        from engine.workflow import collect
+        rows = [dict(label=r["label"], name=r["label"]) for r in data["regions"]]
+        plan = collect(photo, rows, answers, None, None, group_masks, signature)
+        if inventory:
+            raise ValueError("确认方案需要可定位的空间部位图")
     grid = None
     if inventory:
         spec = json.loads(inventory.read_text(encoding="utf-8"))
@@ -146,10 +155,51 @@ def build(photo_path, manifest, folder, weather, inventory=None, patches=None):
             raise ValueError("修订与分区清单的指纹不匹配。")
         groups = {rid: g["key"] for g in data["groups"] for rid in g["region_ids"]}
         labels = {r["id"]: r["label"] for r in data["regions"]}
-        parts, _, part_map = geometry_parts(photo, scene[0], sample_regions, data["regions"], groups)
+        rows = [dict(row, label=plan["merge_into"].get(row["label"], row["label"])) for row in data["regions"]] if plan else data["regions"]
+        parts, _, part_map = geometry_parts(photo, scene[0], sample_regions, rows, groups)
         parts, grid = apply_spatial_review(regions, part_map, parts, groups, labels, review)
         events = {ALIASES.get(w, w) for w in weather}
         assumptions = ["静止场景，普通降雪按弱风与冷表面估计。表面朝向及遮挡由单张照片推算。"]
+        if plan:
+            def full_selection(key):
+                if key == "none":
+                    return np.zeros(regions.shape, bool)
+                if key == "salient":
+                    from engine.vision import infer, tensor
+                    estimated = infer("foreground.onnx", tensor(photo, 320, relative=True))[0]
+                    image = Image.fromarray(estimated).resize(regions.shape[::-1], Image.Resampling.BILINEAR)
+                    return np.asarray(image) > .5
+                if key.startswith("group:"):
+                    return np.isin(regions, [rid for rid, name in groups.items() if name == key[6:]])
+                return np.isin(regions, [row["id"] for row in rows if row["label"] == key])
+            shelter = np.zeros_like(regions, dtype=bool)
+            for key in plan["sheltered"]:
+                shelter |= full_selection(key)
+            assumptions[0] = f"主体 {plan['subject']}，动静 {plan['motion']}，地面 {plan['ground_snow']}。朝向与遮挡由单张照片估计，留雪量由分档仿真计算。"
+            # Split only the affected pixels, including partially overlapping salient subjects.
+            # Exposed high points still get the simulation's reduced deposition.
+            # At lower positions on a fast subject a single view is weak evidence.
+            fast = full_selection(plan["subject"]) if plan["motion"] == "high_speed" else np.zeros_like(shelter)
+            heights = np.arange(fast.shape[0])[:, None]
+            top = fast.argmax(axis=0)
+            bottom = fast.shape[0] - fast[::-1].argmax(axis=0)
+            uncertain_fast = fast & (heights > top + .40 * (bottom - top))
+            for full, suffix, facts in [
+                    (uncertain_fast, "高速运动、难以确认持续留雪", dict(holds_snow=None)),
+                    (shelter, "确认有遮挡", dict(direct=False, wet=False))]:
+                for pid in np.unique(grid[full]):
+                    part = parts[int(pid)-1]
+                    if part["kind"] != "solid" or ("holds_snow" in facts and part.get("holds_snow") is not True):
+                        continue
+                    area = full & (grid == pid)
+                    changed = dict(part, name=part["name"] + "·" + suffix, **facts)
+                    if np.all(full[grid == pid]):
+                        parts[int(pid)-1] = changed
+                    else:
+                        if len(parts) >= 65535:
+                            raise ValueError("空间部位数超过编号上限")
+                        parts.append(changed)
+                        grid[area] = len(parts)
         if events & {"结霜", "凝露"}:
             assumptions.append("霜与露各按相应温湿条件成立的静夜模拟，外露表面较易冷却。")
         if events & {"积水再冻结", "冻雨挂冰"}:
@@ -160,6 +210,9 @@ def build(photo_path, manifest, folder, weather, inventory=None, patches=None):
             assumptions.extend(review.get("assumptions", []))
         spec = dict(manifest_sha256=digest, assumptions=assumptions, parts=parts)
     output = compile_placement(data, spec, digest, weather)
+    if plan:
+        output["answers_sha256"] = hashlib.sha256(answers.read_bytes()).hexdigest()
+        output["plan"] = plan
     output["source"] = data.get("source", photo_path.name)
     if grid is not None:
         write_maps(folder, photo, grid, spec["parts"], output)
@@ -172,6 +225,7 @@ def main():
     parser = argparse.ArgumentParser(description="按图中可见部位交接积留位置")
     parser.add_argument("photo", type=Path)
     parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument("--answers", type=Path)
     spec = parser.add_mutually_exclusive_group()
     spec.add_argument("--parts", type=Path, help="既有的纯文字部位清单")
     spec.add_argument("--patches", type=Path, help="绑定本次清单的空间部位修订")
@@ -185,7 +239,7 @@ def main():
         with TemporaryDirectory(dir=args.out.parent) as tmp:
             package = Path(tmp) / "package"
             package.mkdir()
-            build(args.photo, args.manifest, package, weather_list(args.weather), args.parts, args.patches)
+            build(args.photo, args.manifest, package, weather_list(args.weather), args.parts, args.patches, args.answers)
             package.rename(args.out)
     except (ValueError, OSError, KeyError, TypeError) as exc:
         parser.exit(2, f"位置交接失败：{exc}\n")

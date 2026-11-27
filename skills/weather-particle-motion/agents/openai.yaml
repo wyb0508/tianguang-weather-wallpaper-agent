@@ -1,0 +1,3 @@
+interface:
+  display_name: "降水与风场动画"
+  short_description: "依据照片分区、深度和落点许可生成可离线播放的分层雨雪与风场动画"

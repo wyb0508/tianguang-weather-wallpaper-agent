@@ -1,18 +1,13 @@
-"""Local image segmentation and weather material preparation."""
-import json
-from pathlib import Path
-
+"""Local weather material preparation."""
 import numpy as np
-import onnxruntime as ort
-from PIL import Image, ImageFilter, ImageOps
-from pillow_heif import register_heif_opener
+from PIL import Image
 
-ROOT = Path(__file__).resolve().parents[1]
-MEAN = np.array([.485, .456, .406], dtype=np.float32)
-STD = np.array([.229, .224, .225], dtype=np.float32)
+from .vision import ROOT, MEAN, STD, grayscale, infer, load_photo, segment_scene, soften, tensor
+
 GROUPS = {
     "sky": "sky",
-    "greenery": "tree grass plant palm field flower",
+    "trees": "tree plant palm flower",
+    "grass": "grass field",
     "ground": "road sidewalk earth path sand runway land stairs stairway step",
     "water": "water sea river lake waterfall",
     "structure": "wall building house bridge skyscraper tower fence railing",
@@ -21,120 +16,141 @@ GROUPS = {
 # Chinese labels and inspector colours use the same keys as the renderer.
 LEGEND = {
     "subject": ("主体", "#ff995e"), "sky": ("天空", "#679de5"),
-    "greenery": ("植被", "#63a873"), "ground": ("地面", "#cfa956"),
+    "trees": ("树木／灌木", "#438b63"), "grass": ("草坪／田地", "#aaca55"), "ground": ("地面", "#cfa956"),
     "water": ("水面", "#4fbfc3"), "structure": ("建筑", "#ac91cc"),
     "terrain": ("山石", "#bd8976"), "other": ("其他", "#747b80"),
 }
 
 
-def load_photo(path):
-    register_heif_opener()
-    with Image.open(path) as src:
-        img = ImageOps.exif_transpose(src).convert("RGBA")
-        img.thumbnail((3200, 3200), Image.Resampling.LANCZOS)
-        base = Image.new("RGB", img.size, "#202a34")
-        base.paste(img, mask=img.getchannel("A"))
-        return base
+def geometry(photo, size):
+    # Preserve aspect ratio and cap patch count for panoramic inputs.
+    scale = 518 / max(photo.size)
+    dims = tuple(max(14, round(n * scale / 14) * 14) for n in photo.size)
+    rgb = np.asarray(photo.resize(dims, Image.Resampling.BICUBIC), dtype=np.float32) / 255
+    pixels = np.ascontiguousarray(((rgb - MEAN) / STD).transpose(2, 0, 1)[None])
+    prediction = infer("depth.onnx", pixels)
+    raw = np.asarray(Image.fromarray(prediction).resize(size, Image.Resampling.BILINEAR))
+    low, high = np.percentile(raw, [1, 99])
+    disparity = np.clip((raw-low)/max(high-low, 1e-5), 0, 1)
+    # Approximate a perspective surface from relative inverse depth, assuming an
+    # upright camera. Its camera-up component is a deposition cue, not a measured angle.
+    inverse_z = .25 + soften(disparity, 1.6)
+    def gradient(axis):
+        if inverse_z.shape[axis] < 2:
+            return np.zeros_like(inverse_z)
+        return np.gradient(inverse_z, axis=axis)
+    focal = max(size)*.8
+    dx, dy = gradient(1)*focal, gradient(0)*focal
+    yy, xx = np.indices(raw.shape)
+    nz = inverse_z - (xx-size[0]/2)*dx/focal - (yy-size[1]/2)*dy/focal
+    upward = np.clip(dy / np.sqrt(dx*dx + dy*dy + nz*nz + 1e-6), 0, 1)
+    # A nearer surface directly overhead can shelter the one behind it.
+    exposure = np.ones_like(disparity)
+    for distance in (max(1,size[1]//80), max(2,size[1]//28)):
+        delta = disparity[:-distance] - disparity[distance:]
+        exposure[distance:] *= 1 - .5*np.clip((delta-.08)*4, 0, 1)
+    return disparity, upward, exposure
 
 
-def infer(model, tensor):
-    opts = ort.SessionOptions()
-    opts.intra_op_num_threads = 3
-    session = ort.InferenceSession(str(ROOT / 'models' / model), opts,
-                                   providers=["CPUExecutionProvider"])
-    return session.run([session.get_outputs()[0].name],
-                       {session.get_inputs()[0].name: tensor})[0][0]
-
-
-def tensor(photo, size, relative=False):
-    a = np.asarray(photo.resize((size, size), Image.Resampling.BILINEAR), dtype=np.float32)
-    a /= max(float(a.max()), 1) if relative else 255.
-    return np.ascontiguousarray(((a - MEAN) / STD).transpose(2, 0, 1)[None])
-
-
-def grayscale(a):
-    return Image.fromarray((np.clip(a, 0, 1) * 255).astype('uint8'))
-
-
-def soften(a, radius):
-    return np.asarray(grayscale(a).filter(ImageFilter.GaussianBlur(radius)), dtype=np.float32) / 255
-
-
-def analyze(photo):
-    small = photo.copy()
-    small.thumbnail((1024, 1024))
+def analyze(photo, scene, plan, folder, groups=None):
+    groups = groups or {}
+    small, original_labels, names = scene
     w, h = small.size
-    names = json.loads((ROOT / 'models/classes.json').read_text())['id2label']
-    logits = infer("scene.onnx", tensor(photo, 512))
-    # Compare logits after interpolation to preserve boundaries of small classes.
-    best = np.full((h,w), -np.inf, dtype=np.float32)
-    labels = np.zeros((h,w), dtype=np.uint8)
-    for idx, plane in enumerate(logits):
-        scores = np.asarray(Image.fromarray(plane).resize((w,h), Image.Resampling.BILINEAR))
-        take = scores > best
-        best[take], labels[take] = scores[take], idx
-    raw = infer("foreground.onnx", tensor(photo, 320, relative=True))[0]
-    fg = np.asarray(grayscale(raw).resize((w,h), Image.Resampling.BILINEAR), dtype=np.float32) / 255
-    obj_ids = [int(i) for i,n in names.items() if n.strip() in
-               {"person","car","truck","bus","animal","boat","airplane","bicycle","flower","minibike","train","ship","van"}]
-    obj = np.isin(labels, obj_ids)
-    binary = fg > .5
-    if binary.mean() < .008 or binary.mean() > .94:
-        fg = soften(obj, 1) if .008 < obj.mean() < .94 else np.zeros_like(fg)
-    subject = fg > .5
-    subject_labels = np.bincount(labels[subject], minlength=len(names))
-    top = int(subject_labels.argmax())
-    subject_name = names[str(top)].strip() if top in obj_ids and subject_labels[top] > .30 * subject.sum() else None
+    ids = {name.strip():int(idx) for idx,name in names.items()}
+    labels = original_labels.copy()
+    for source, target in plan["merge_into"].items():
+        labels[original_labels == ids[source]] = ids[target]
+    selected = plan["subject"]
+    if selected == "none":
+        fg = np.zeros((h, w), dtype=np.float32)
+    elif selected.startswith("group:"):
+        fg = soften(groups[selected[6:]], .7)
+    elif selected == "salient":
+        raw = infer("foreground.onnx", tensor(photo, 320, relative=True))[0]
+        fg = np.asarray(grayscale(raw).resize((w,h), Image.Resampling.BILINEAR), dtype=np.float32)/255
+        if (fg>.5).mean() < .001 or (fg>.5).mean() > .99:
+            raise ValueError("显著主体边界不明确，请在分区图中指定主体类别。")
+    else:
+        fg = soften(labels == ids[selected], .7)
 
-    sky_id = next(int(i) for i,n in names.items() if n.strip() == "sky")
-    outdoor = (labels == sky_id).mean() > .05
-    masks = {}
+    depth, up, exposure = geometry(photo, (w,h))
+    grayscale(depth).save(folder / "相对深度.png")
+    grayscale(up).save(folder / "朝上表面估计.png")
+    for key in plan["sheltered"]:
+        if key.startswith("group:"):
+            exposure *= ~groups[key[6:]]
+        else:
+            exposure *= (1-fg) if key=="salient" else (labels!=ids[key])
+    # Interpret reviewed surface groups while preserving subsequent explicit class merges.
+    surface = {}
+    for key, material in (("track", "ground"), ("ground", "ground"), ("sky", "sky"), ("water", "water")):
+        if key in groups:
+            mask = groups[key] & (labels == original_labels)
+            if key == "ground":
+                # A coarse ground group may include lawn and fields; retain
+                # these material identities when calculating their response.
+                grass_ids = [ids[n] for n in GROUPS["grass"].split() if n in ids]
+                mask &= ~np.isin(labels, grass_ids)
+            surface[material] = surface.get(material, False) | mask
+    reviewed = np.logical_or.reduce(list(surface.values())) if surface else np.zeros_like(labels, bool)
+    materials = {}
     for key, group in GROUPS.items():
         valid = set(group.split())
-        if key == 'water': valid.add('swimming pool')
-        if key == 'ground':
-            valid.add('dirt track')
-            if outdoor:
-                valid.add('floor')
-        ids = [int(i) for i,n in names.items() if n.strip() in valid]
-        masks[key] = soften(np.isin(labels, ids), max(.55, w/1250)) * (1-fg)
-    masks["subject"] = fg
-    masks["other"] = np.clip(1-sum(masks.values()),0,1)
-
-    # Directional deposition: upper silhouette, internal upward ledges, surface texture.
+        if key == "water":
+            valid.add("swimming pool")
+        if key == "ground":
+            valid.add("dirt track")
+        raw_mask = np.isin(labels, [ids[n] for n in valid if n in ids])
+        materials[key] = soften((raw_mask & ~reviewed) | surface.get(key, False), .7)
+    # Physics uses material even when the user selects it as the main subject.
+    # Selection changes its motion/occlusion, not what it is made of.
     rgb = np.asarray(small,dtype=np.float32)/255
     lum = rgb @ np.array([.2126,.7152,.0722],dtype=np.float32)
-    depth = max(2,round(h*.018))
-    above = np.pad(fg, ((depth,0),(0,0)), mode='edge')[:-depth]
-    rim = soften(np.clip(fg-above,0,1), max(.7,h/750))
-    occupied = fg>.45
-    y = np.arange(h)[:,None]
-    height = np.maximum(1, h-1-occupied[::-1].argmax(axis=0)-occupied.argmax(axis=0))
-    near_top = np.exp(-np.maximum(0,y-occupied.argmax(axis=0))/(height*.19+1))
-    ledges = np.clip((lum-soften(lum, max(1,w/145)))*4.5,0,1)
+    edges = np.clip((lum-soften(lum,max(1,w/145)))*4.5,0,1)
+    offset = max(1,round(h*.009))
+    rim = np.clip(fg-np.pad(fg,((offset,0),(0,0)),mode="edge")[:-offset],0,1)
+    ground_gain = {"wet":.23,"natural":.72,"cold":1.}[plan["ground_snow"]]
+    snow = (ground_gain*materials["ground"]*(.38+.62*up) +
+            materials["grass"]*(.50+.34*up+.16*edges) +
+            materials["trees"]*(.07+.30*up+.52*edges) +
+            materials["terrain"]*(.10+.70*up+.20*edges) +
+            materials["structure"]*(.64*up+.16*edges))
+    unknown = np.clip(1-sum(materials.values()),0,1)
+    snow += unknown*(.65*up+.30*rim+.08*edges)
+    motion_gain = {None:1., "stationary":1., "moving":.55, "high_speed":.12}[plan["motion"]]
+    snow *= (1-fg*(1-motion_gain)) * exposure
     rng = np.random.default_rng(73)
-    noise = rng.uniform(.52,1,(h,w))
-    subject_snow = fg*(.78*rim + .44*near_top*(.3+lum*.7)+.36*ledges*near_top)
-    if subject_name in ('person','animal'): subject_snow *= .68
-    surface = (subject_snow + masks['ground']*(.32+.42*lum) +
-               masks['greenery']*(.12+.8*ledges) + masks['terrain']*(.18+.67*ledges) +
-               masks['structure']*.48*ledges)
-    snow = np.clip(surface*noise,0,1)
-    rain = np.clip(.50*masks['sky'] + .39*masks['ground'] + .25*masks['water']+
-                   .14*masks['greenery']+.12*masks['subject']+.12*masks['structure'],0,1)
+    # Blend broad drifts with finer grains to preserve the original surface texture.
+    patch_grid = rng.uniform(.4, 1, (max(2,h//26), max(2,w//26))).astype("float32")
+    patches = np.asarray(Image.fromarray(patch_grid).resize((w,h), Image.Resampling.BICUBIC))
+    snow *= (.35 + .65*patches) * rng.uniform(.90,1,(h,w))
+    snow = np.clip(snow*(1-materials["sky"])*(1-materials["water"]),0,1)
+    wet_surface = (.48*materials["ground"] + .25*materials["water"] + .18*materials["grass"]+
+                   .13*materials["trees"]+.15*materials["structure"]+.18*unknown)
+    rain = np.clip(exposure*wet_surface,0,1)
+    masks = {k:v*(1-fg) for k,v in materials.items()}
+    masks["subject"] = fg
+    masks["other"] = np.clip(1-sum(masks.values()),0,1)
     debug = np.zeros_like(rgb)
     for key,(_,color) in LEGEND.items():
-        debug += masks[key][...,None]*np.array(
-                    [int(color[i:i+2],16)/255 for i in (1,3,5)],dtype=np.float32)
-    inspector = Image.fromarray((np.clip(.30*rgb+.70*debug,0,1)*255).astype('uint8'))
-    ys,xs = np.where(masks['water']>.75)
+        debug += masks[key][...,None]*np.array(tuple(bytes.fromhex(color[1:])))/255
+    inspector = Image.fromarray((np.clip(.30*rgb+.70*debug,0,1)*255).astype("uint8"))
+    water = materials["water"]*exposure
+    ys,xs = np.where(water>.75)
     points = []
-    if len(xs) >= max(16, round(w*h*.003)):
-        for i in rng.choice(len(xs),size=min(80,len(xs)),replace=False):
+    if len(xs) >= max(16,round(w*h*.003)):
+        for i in np.random.default_rng(91).choice(len(xs),size=min(80,len(xs)),replace=False):
             points.append([round(float(xs[i]+.5)/w,5), round(float(ys[i]+.5)/h,5)])
-    coverage={k:round(float(v.mean()),4) for k,v in masks.items()}
-    report={"subject_class":subject_name,"coverage":coverage,
-            "scene_classes":{names[str(i)].strip():round(float((labels==i).mean()),4)
-                             for i in np.unique(labels) if (labels==i).mean()>=.008},
-            "water_points":points, "size":list(photo.size)}
-    return masks, snow, rain, inspector, report
+    coverage = {k:round(float(v.mean()),4) for k,v in masks.items()}
+    surface_report = {}
+    for idx in np.unique(labels):
+        region = labels==idx
+        surface_report[names[str(idx)].strip()] = {
+            "pixels":int(region.sum()), "exposure":round(float(exposure[region].mean()),3),
+            "snow_mean":round(float(snow[region].mean()),3), "rain_mean":round(float(rain[region].mean()),3)}
+    report = {"subject_class":selected,"subject_motion":plan["motion"],"coverage":coverage,
+              "scene_classes":{k:round(v["pixels"]/labels.size,4) for k,v in surface_report.items()},
+              "surface_effects":surface_report,"water_points":points,"size":list(photo.size)}
+    render_masks = dict(subject=fg*(1-materials["sky"])*(1-materials["water"]),
+                        sky=materials["sky"], water=water)
+    return render_masks, snow, rain, inspector, report

@@ -41,3 +41,7 @@ description: 读取已分区照片或上游分区 ZIP，自主按可见部位估
 python3 -m venv "$SKILL_DIR/.venv"
 "$SKILL_DIR/.venv/bin/python" -m pip install -r "$SKILL_DIR/requirements.txt"
 ```
+
+主 Agent 的位置计算会传入 `--answers`，按原尺寸区块处理确认的遮挡和主体状态，并在交接中记录方案摘要。后续六档降水仿真使用同一份确认方案。
+
+积水许可结合路缘、局部凹陷与反射证据。车辆疑似玻璃默认保守处理。

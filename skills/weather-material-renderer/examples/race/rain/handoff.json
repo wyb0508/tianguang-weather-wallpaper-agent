@@ -1,0 +1,288 @@
+{
+  "schema": "weather-surface-physics/v1",
+  "image_sha256": "3f625bce07cce99213a4130f7e835c2f78f0d7cbeb3bc0f305406201ff13568f",
+  "manifest_sha256": "8898076b1bdc6267bc68b313ee4cb313d473fda765c7c47f63a76adb2b177f40",
+  "region_pack_sha256": "98cedca6536def236d68a093e053d0f01560b25d2bceaefcaa8f1e1cdebeec31",
+  "size": [
+    1672,
+    941
+  ],
+  "analysis_size": [
+    1024,
+    576
+  ],
+  "region_map": "regions.png",
+  "reference": "reference.jpg",
+  "preview": "preview.jpg",
+  "instructions": "特效交接.md",
+  "scenario": {
+    "weather": "大雨",
+    "temperature_c": 5,
+    "temperature_source": "assumed",
+    "old_snow": 0,
+    "plan": {
+      "version": 1,
+      "image_sha256": "5bbb186317546812818e9c0f6ee585497a8a630e998f4ec42c01e5a3f2469392",
+      "subject": "group:subject",
+      "motion": "high_speed",
+      "merge_into": {},
+      "sheltered": [],
+      "ground_snow": "natural",
+      "accumulation": "fixed_per_intensity",
+      "weather": {
+        "晴朗": "standard",
+        "日出": "standard",
+        "日落": "standard",
+        "黄昏": "standard",
+        "深夜": "standard",
+        "多云": "standard",
+        "大风": "standard",
+        "小雨": "standard",
+        "大雨": "standard",
+        "小雪": "standard",
+        "中雪": "standard",
+        "大雪": "standard",
+        "暴雪": "standard"
+      },
+      "region_pack_sha256": "98cedca6536def236d68a093e053d0f01560b25d2bceaefcaa8f1e1cdebeec31"
+    },
+    "motion_source": "plan",
+    "total_rain": 1.0,
+    "total_snow": 0,
+    "visual_gain": 1.0
+  },
+  "review": {},
+  "geometry_method": "Depth Anything V2, upright-camera image-space approximation",
+  "maps": {
+    "depth": "depth.png",
+    "up": "up.png",
+    "exposure": "exposure.png",
+    "support": "support.png",
+    "contact": "contact.png",
+    "deposition": "deposition.png",
+    "ripple": "ripple.png",
+    "direction": "direction.png",
+    "material": "material.png"
+  },
+  "contact_scale": 1,
+  "direction_codes": [
+    "left",
+    "right",
+    "down",
+    "up",
+    "still"
+  ],
+  "material_codes": [
+    "air",
+    "water",
+    "hard",
+    "porous",
+    "foliage",
+    "smooth"
+  ],
+  "state_scales": {
+    "snow": 0.0001,
+    "film": 2.3374063968658447,
+    "runoff": 0.14197222888469696,
+    "drip": 0.0001,
+    "landing": 0.0001,
+    "absorbed": 0.2160000503063202
+  },
+  "keyframes": [
+    {
+      "seconds": 0,
+      "maps": {
+        "snow": "0-snow.png",
+        "film": "0-film.png",
+        "runoff": "0-runoff.png",
+        "drip": "0-drip.png",
+        "landing": "0-landing.png",
+        "absorbed": "0-absorbed.png"
+      }
+    },
+    {
+      "seconds": 300,
+      "maps": {
+        "snow": "300-snow.png",
+        "film": "300-film.png",
+        "runoff": "300-runoff.png",
+        "drip": "300-drip.png",
+        "landing": "300-landing.png",
+        "absorbed": "300-absorbed.png"
+      }
+    },
+    {
+      "seconds": 600,
+      "maps": {
+        "snow": "600-snow.png",
+        "film": "600-film.png",
+        "runoff": "600-runoff.png",
+        "drip": "600-drip.png",
+        "landing": "600-landing.png",
+        "absorbed": "600-absorbed.png"
+      }
+    }
+  ],
+  "regions": [
+    {
+      "region_id": 1,
+      "key": "wall",
+      "label": "wall",
+      "group": "background",
+      "base_material": "hard",
+      "response": "雨点接触后形成水膜，沿流向输送多余水；雪只在有承托的像素显现。",
+      "patches": [],
+      "final_mean": {
+        "contact": 0.31117,
+        "deposition": 0.0,
+        "snow": 0.0,
+        "film": 0.31117,
+        "runoff": 0.0172,
+        "drip": 0.0,
+        "landing": 0.0,
+        "absorbed": 0.0
+      }
+    },
+    {
+      "region_id": 2,
+      "key": "sky",
+      "label": "sky",
+      "group": "sky",
+      "base_material": "air",
+      "response": "仅承载空中粒子；表面通道为零。",
+      "patches": [],
+      "final_mean": {
+        "contact": 0.0,
+        "deposition": 0.0,
+        "snow": 0.0,
+        "film": 0.0,
+        "runoff": 0.0,
+        "drip": 0.0,
+        "landing": 0.0,
+        "absorbed": 0.0
+      }
+    },
+    {
+      "region_id": 3,
+      "key": "floor",
+      "label": "floor",
+      "group": "track",
+      "base_material": "hard",
+      "response": "雨点接触后形成水膜，沿流向输送多余水；雪只在有承托的像素显现。",
+      "patches": [],
+      "final_mean": {
+        "contact": 0.89995,
+        "deposition": 0.0,
+        "snow": 0.0,
+        "film": 0.89995,
+        "runoff": 0.01834,
+        "drip": 0.0,
+        "landing": 0.0,
+        "absorbed": 0.0
+      }
+    },
+    {
+      "region_id": 4,
+      "key": "tree",
+      "label": "tree",
+      "group": "background",
+      "base_material": "foliage",
+      "response": "沿枝叶轮廓形成断续的挂水和留雪，保留轮廓中的空隙。",
+      "patches": [],
+      "final_mean": {
+        "contact": 0.28003,
+        "deposition": 0.0,
+        "snow": 0.0,
+        "film": 0.20803,
+        "runoff": 0.01483,
+        "drip": 0.0,
+        "landing": 0.0,
+        "absorbed": 0.072
+      }
+    },
+    {
+      "region_id": 5,
+      "key": "road",
+      "label": "road",
+      "group": "track",
+      "base_material": "hard",
+      "response": "雨点接触后形成水膜，沿流向输送多余水；雪只在有承托的像素显现。",
+      "patches": [],
+      "final_mean": {
+        "contact": 0.87359,
+        "deposition": 0.0,
+        "snow": 0.0,
+        "film": 0.87359,
+        "runoff": 0.01899,
+        "drip": 0.0,
+        "landing": 0.0,
+        "absorbed": 0.0
+      }
+    },
+    {
+      "region_id": 6,
+      "key": "grass",
+      "label": "grass",
+      "group": "background",
+      "base_material": "porous",
+      "response": "吸水处先变暗，结合剩余水膜控制高光；让原表面纹理透过薄雪。",
+      "patches": [],
+      "final_mean": {
+        "contact": 0.5713,
+        "deposition": 0.0,
+        "snow": 0.0,
+        "film": 0.38602,
+        "runoff": 0.01417,
+        "drip": 0.0,
+        "landing": 0.0,
+        "absorbed": 0.18528
+      }
+    },
+    {
+      "region_id": 7,
+      "key": "car",
+      "label": "car",
+      "group": "subject",
+      "base_material": "smooth",
+      "response": "沿局部流向移动水珠，按水膜调整高光；雪随承托能力和运动衰减。",
+      "patches": [],
+      "final_mean": {
+        "contact": 0.37609,
+        "deposition": 0.0,
+        "snow": 0.0,
+        "film": 0.37609,
+        "runoff": 0.04827,
+        "drip": 0.0,
+        "landing": 0.0,
+        "absorbed": 0.0
+      }
+    },
+    {
+      "region_id": 8,
+      "key": "fence",
+      "label": "fence",
+      "group": "background",
+      "base_material": "hard",
+      "response": "雨点接触后形成水膜，沿流向输送多余水；雪只在有承托的像素显现。",
+      "patches": [],
+      "final_mean": {
+        "contact": 0.53724,
+        "deposition": 0.0,
+        "snow": 0.0,
+        "film": 0.53724,
+        "runoff": 0.03197,
+        "drip": 0.0,
+        "landing": 0.0,
+        "absorbed": 0.0
+      }
+    }
+  ],
+  "balance": {
+    "initial": 0.0,
+    "received": 293710.30510807224,
+    "absorbed": 18431.235893414356,
+    "joined_water": 0.0,
+    "stored": 275279.06096738,
+    "residual": 0.008247277874033898
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "schema": "weather-material-renderer/v1",
+  "version": 1,
+  "image_sha256": "3f625bce07cce99213a4130f7e835c2f78f0d7cbeb3bc0f305406201ff13568f",
+  "manifest_sha256": "8898076b1bdc6267bc68b313ee4cb313d473fda765c7c47f63a76adb2b177f40",
+  "region_pack_sha256": "98cedca6536def236d68a093e053d0f01560b25d2bceaefcaa8f1e1cdebeec31",
+  "answers_sha256": "fe6475d94a9ea651763936d352107702ae8b579edd279981f991ca24f7b74dfe",
+  "handoff_sha256": "4ba4c27cbfb73c84b514188b8c26bd14f21ea77c85323149fc485c0a789ef6d9",
+  "handoff_schema": "weather-surface-physics/v1",
+  "size": [
+    1672,
+    941
+  ],
+  "orientation": "exif-transposed",
+  "source_exif_orientation": 1,
+  "origin": "top-left",
+  "axes": [
+    "right",
+    "down"
+  ],
+  "weather": "大雨",
+  "seed": 37,
+  "subject": "group:subject",
+  "motion": "high_speed",
+  "ground_snow": "natural",
+  "blend": "source-over",
+  "alpha": "straight",
+  "color_space": "sRGB",
+  "layers": [
+    {
+      "order": 0,
+      "phenomenon": "湿色",
+      "path": "大雨-湿色.png",
+      "blend": "source-over",
+      "evidence": [
+        "keyframes[600s].maps.absorbed",
+        "keyframes[600s].maps.film",
+        "maps.contact"
+      ],
+      "eligible_pixels": 1315589,
+      "visible_pixels": 1315589,
+      "empty_reason": null
+    },
+    {
+      "order": 1,
+      "phenomenon": "水膜",
+      "path": "大雨-水膜.png",
+      "blend": "source-over",
+      "evidence": [
+        "keyframes[600s].maps.film"
+      ],
+      "eligible_pixels": 1296393,
+      "visible_pixels": 1190882,
+      "empty_reason": null
+    },
+    {
+      "order": 2,
+      "phenomenon": "积水反射",
+      "path": "大雨-积水反射.png",
+      "blend": "source-over",
+      "evidence": [
+        "placement.maps.积水"
+      ],
+      "eligible_pixels": 0,
+      "visible_pixels": 0,
+      "empty_reason": "该现象的位置蒙版没有 255 像素"
+    }
+  ],
+  "preview": "大雨-预览.jpg",
+  "places_sha256": "11bec72e7854b649e6e9ebaab0158782819020d826713a699584de7696971814",
+  "sample_seconds": 600,
+  "initial_snow": 0,
+  "snow_state": "终态存量（含仍然留存的初始雪）"
+}

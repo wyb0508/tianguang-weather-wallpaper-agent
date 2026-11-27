@@ -1,0 +1,44 @@
+{
+  "schema": "weather-material-renderer/v1",
+  "version": 1,
+  "image_sha256": "3f625bce07cce99213a4130f7e835c2f78f0d7cbeb3bc0f305406201ff13568f",
+  "manifest_sha256": "8898076b1bdc6267bc68b313ee4cb313d473fda765c7c47f63a76adb2b177f40",
+  "region_pack_sha256": "98cedca6536def236d68a093e053d0f01560b25d2bceaefcaa8f1e1cdebeec31",
+  "answers_sha256": "fe6475d94a9ea651763936d352107702ae8b579edd279981f991ca24f7b74dfe",
+  "handoff_sha256": "11bec72e7854b649e6e9ebaab0158782819020d826713a699584de7696971814",
+  "handoff_schema": "weather-accumulation-places/v1",
+  "size": [
+    1672,
+    941
+  ],
+  "orientation": "exif-transposed",
+  "source_exif_orientation": 1,
+  "origin": "top-left",
+  "axes": [
+    "right",
+    "down"
+  ],
+  "weather": "大雪",
+  "seed": 37,
+  "subject": "group:subject",
+  "motion": "high_speed",
+  "ground_snow": "natural",
+  "blend": "source-over",
+  "alpha": "straight",
+  "color_space": "sRGB",
+  "layers": [
+    {
+      "order": 0,
+      "phenomenon": "积雪",
+      "path": "大雪-积雪.png",
+      "blend": "source-over",
+      "evidence": [
+        "placement.maps.积雪"
+      ],
+      "eligible_pixels": 866581,
+      "visible_pixels": 611252,
+      "empty_reason": null
+    }
+  ],
+  "preview": "大雪-预览.jpg"
+}

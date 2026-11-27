@@ -1,0 +1,203 @@
+{
+  "schema": "weather-particle-motion/v1",
+  "inputs": {
+    "image_sha256": "3f625bce07cce99213a4130f7e835c2f78f0d7cbeb3bc0f305406201ff13568f",
+    "manifest_sha256": "8898076b1bdc6267bc68b313ee4cb313d473fda765c7c47f63a76adb2b177f40",
+    "answers_sha256": "fe6475d94a9ea651763936d352107702ae8b579edd279981f991ca24f7b74dfe",
+    "region_pack_sha256": "98cedca6536def236d68a093e053d0f01560b25d2bceaefcaa8f1e1cdebeec31",
+    "physics": [
+      {
+        "schema": "weather-surface-physics/v1",
+        "sha256": "4ba4c27cbfb73c84b514188b8c26bd14f21ea77c85323149fc485c0a789ef6d9",
+        "channels": {
+          "depth": "599ba4799e67f198939c24d4ca6ef9f0848af87a3c866f4e043817f57797c11c",
+          "contact": "a86c3fc2dbcc52c6fcc58e585647d298b4a04fa0e7a4184090e874b411f2b0bf",
+          "material": "82420612a2aa9afe8dec98dd54e3983607915e3492f62b0cf25f7ac006f8ace7",
+          "ripple": "3321379fda1abf165ca4f3783b9c5983927ad00cb03733fd6a9c78071e8d4e2f"
+        },
+        "weather": "大雨"
+      },
+      {
+        "schema": "weather-accumulation-places/v1",
+        "sha256": "11bec72e7854b649e6e9ebaab0158782819020d826713a699584de7696971814",
+        "channels": {
+          "积水": "f6d127f7ab94aef3a2fa266038db5cd27099548df5f582743d9f900bb0d49886"
+        }
+      }
+    ],
+    "materials_sha256": [
+      "7c1b62f723efabe42a070c2bf0383ed8810c5282f8f12183b54e6167b2eeff80",
+      "c78336c42b3abe81c1bc87180c88a194d8589f749549966bf0c2b4586fc2e4ea"
+    ],
+    "group_masks_sha256": {},
+    "plan_region_pack_sha256": "98cedca6536def236d68a093e053d0f01560b25d2bceaefcaa8f1e1cdebeec31",
+    "region_verification": "classes-and-groups"
+  },
+  "image_sha256": "3f625bce07cce99213a4130f7e835c2f78f0d7cbeb3bc0f305406201ff13568f",
+  "manifest_sha256": "8898076b1bdc6267bc68b313ee4cb313d473fda765c7c47f63a76adb2b177f40",
+  "answers_sha256": "fe6475d94a9ea651763936d352107702ae8b579edd279981f991ca24f7b74dfe",
+  "size": [
+    1672,
+    941
+  ],
+  "orientation": "exif-transposed",
+  "source_exif_orientation": 1,
+  "subject": "group:subject",
+  "motion": "high_speed",
+  "merge_into": {},
+  "coordinates": {
+    "origin": "top-left",
+    "u": "x/imageWidth",
+    "v": "y/imageHeight",
+    "fit": "center-cover",
+    "scale": "max(viewWidth/imageWidth,viewHeight/imageHeight)*zoom",
+    "offset": "(viewport-scaledImage)/2",
+    "zoom": 1
+  },
+  "occlusion": {
+    "method": "relative-inverse-depth",
+    "source": "handoff:maps.depth",
+    "precision": "uint8/255",
+    "direction": "far-black-near-white"
+  },
+  "seed": 731,
+  "time_unit": "seconds",
+  "fps": 20,
+  "profiles": {
+    "晴朗": {
+      "kind": "clear",
+      "gain": 1.0
+    },
+    "日出": {
+      "kind": "clear",
+      "gain": 1.0
+    },
+    "日落": {
+      "kind": "clear",
+      "gain": 1.0
+    },
+    "黄昏": {
+      "kind": "clear",
+      "gain": 1.0
+    },
+    "深夜": {
+      "kind": "clear",
+      "gain": 1.0
+    },
+    "多云": {
+      "kind": "clear",
+      "gain": 1.0
+    },
+    "大风": {
+      "kind": "wind",
+      "count": 64,
+      "near": 0.22,
+      "opacity": 0.38,
+      "fall": 0.018,
+      "wind": 0.25,
+      "gain": 1.0
+    },
+    "小雨": {
+      "kind": "rain",
+      "count": 115,
+      "near": 0.22,
+      "opacity": 0.42,
+      "fall": 0.52,
+      "wind": 0.033,
+      "gain": 1.0
+    },
+    "大雨": {
+      "kind": "rain",
+      "count": 360,
+      "near": 0.34,
+      "opacity": 0.73,
+      "fall": 0.94,
+      "wind": 0.095,
+      "gain": 1.0
+    },
+    "小雪": {
+      "kind": "snow",
+      "count": 64,
+      "near": 0.12,
+      "opacity": 0.6,
+      "fall": 0.046,
+      "wind": 0.016,
+      "gain": 1.0
+    },
+    "中雪": {
+      "kind": "snow",
+      "count": 150,
+      "near": 0.18,
+      "opacity": 0.71,
+      "fall": 0.061,
+      "wind": 0.032,
+      "gain": 1.0
+    },
+    "大雪": {
+      "kind": "snow",
+      "count": 285,
+      "near": 0.24,
+      "opacity": 0.82,
+      "fall": 0.078,
+      "wind": 0.05,
+      "gain": 1.0
+    },
+    "暴雪": {
+      "kind": "snow",
+      "count": 460,
+      "near": 0.3,
+      "opacity": 0.87,
+      "fall": 0.103,
+      "wind": 0.11,
+      "gain": 1.0
+    }
+  },
+  "wind_unit": "image heights/second; signed horizontal component (+right)",
+  "layers": [
+    "photo",
+    "materials (listed order)",
+    "surface impacts",
+    "depth-tested air",
+    "caption",
+    "controls"
+  ],
+  "photo": "photo.jpg",
+  "caption": null,
+  "materials": [
+    {
+      "path": "material-0.png",
+      "weather": "大雪",
+      "blend": "normal",
+      "sha256": "b1a4207f89e04869d29ca690f70b5c3fec395b165113b94d6fb83c5fd8b40423"
+    },
+    {
+      "path": "material-1.png",
+      "weather": "大雨",
+      "blend": "normal",
+      "sha256": "cde9f92487ce2220d7357e4303bc711165b27ccc242f6477bf9758444aa89823"
+    },
+    {
+      "path": "material-2.png",
+      "weather": "大雨",
+      "blend": "normal",
+      "sha256": "409acbd44a4780769707b1b690c7c29fb469bbaf4156bb5c2a66f39862572b32"
+    },
+    {
+      "path": "material-3.png",
+      "weather": "大雨",
+      "blend": "normal",
+      "sha256": "2f9e6079787f6029a8f3a6a83bf9795479a18c1c8ea9ab737831101164bc8ca4"
+    }
+  ],
+  "drains": {
+    "大雨": []
+  },
+  "entry": {
+    "preview": "index.html",
+    "module": "motion.js",
+    "data": "scene-data.js",
+    "factory": "WeatherParticleMotion.create",
+    "sampling": "sample(seconds)"
+  },
+  "default_weather": "大雪"
+}

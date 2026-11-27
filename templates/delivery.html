@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>天气壁纸</title>
+<style>
+:root{color-scheme:dark;font:15px system-ui,sans-serif}body{margin:0;background:#172027;color:#fff}
+#stage,#inspect,#sky,#light{position:fixed;inset:0}#inspect{width:100%;height:100%;object-fit:contain;background:#192025}
+#sky{background:#727d89;mask-size:cover;mask-position:center}.controls{position:fixed;left:3vw;bottom:4vh;display:flex;gap:.8em;align-items:center;padding:12px 16px;border-radius:10px;background:#1a232aed}
+.desktop .controls{display:none}select,button{font:inherit;color:inherit;background:#384550;border:1px solid #8997a0;border-radius:5px;padding:5px}
+#status{position:fixed;left:14px;top:12px}#protected{position:fixed;width:100%;height:100%;inset:0;object-fit:cover;pointer-events:none}
+</style>
+<main id="stage"></main><div id="sky"></div><div id="light"></div><img id="protected" hidden alt=""><img id="inspect" hidden alt="带编号的识别分区">
+<section class="controls"><strong id="name"></strong><label>天气 <select id="preset"></select></label><button id="regions">识别分区</button><button id="pause">暂停</button></section>
+<output id="status">正在加载天气图层…</output>
+<script id="scene" type="application/json">__SCENE__</script>
+<script id="assets" type="application/json">__ASSETS__</script>
+<script id="display" type="application/json">__DISPLAY__</script>
+<script id="module">__MOTION__</script><script id="bridge">__BRIDGE__</script></html>

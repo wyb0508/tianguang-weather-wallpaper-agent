@@ -1,0 +1,3 @@
+interface:
+  display_name: "天气材质渲染"
+  short_description: "读取分区与天气物理交接，将照片表面的积雪、湿色与冰霜渲染为独立透明图层"

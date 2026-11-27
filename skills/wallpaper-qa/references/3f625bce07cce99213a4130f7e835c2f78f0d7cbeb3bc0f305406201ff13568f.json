@@ -1,0 +1,85 @@
+{
+  "image_sha256": "3f625bce07cce99213a4130f7e835c2f78f0d7cbeb3bc0f305406201ff13568f",
+  "size": [
+    1672,
+    941
+  ],
+  "samples": [
+    {
+      "name": "前格栅开口",
+      "box": [
+        971,
+        580,
+        1004,
+        640
+      ],
+      "expect": "clear"
+    },
+    {
+      "name": "前轮侧面",
+      "box": [
+        704,
+        576,
+        750,
+        632
+      ],
+      "expect": "clear"
+    },
+    {
+      "name": "无遮挡天空",
+      "box": [
+        780,
+        8,
+        1030,
+        58
+      ],
+      "expect": "clear"
+    },
+    {
+      "name": "近景露天赛道",
+      "box": [
+        280,
+        740,
+        500,
+        850
+      ],
+      "expect": "some",
+      "unless_sheltered": true
+    },
+    {
+      "name": "前风挡中央",
+      "box": [
+        705,
+        424,
+        830,
+        469
+      ],
+      "expect": "clear"
+    },
+    {
+      "name": "侧窗玻璃",
+      "box": [
+        568,
+        437,
+        610,
+        451
+      ],
+      "expect": "clear"
+    },
+    {
+      "name": "车顶承托面",
+      "box": [
+        650,
+        399,
+        785,
+        410
+      ],
+      "expect": "some",
+      "weather": [
+        "大雪",
+        "暴雪"
+      ],
+      "unless_sheltered": true
+    }
+  ]
+}

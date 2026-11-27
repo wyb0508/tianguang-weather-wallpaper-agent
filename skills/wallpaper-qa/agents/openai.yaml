@@ -1,0 +1,4 @@
+interface:
+  display_name: "壁纸视觉与性能验收"
+  short_description: "检查天气壁纸的图层、动画、资源和本地交付，保留实测证据与复现步骤"
+  default_prompt: "用 $wallpaper-qa 验收这个天气壁纸作品目录。"
